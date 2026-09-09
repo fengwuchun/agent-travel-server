@@ -33,8 +33,9 @@ def plan_itinerary_node(state:TravelState) -> TravelState:
 
       1. 严格按照 TravelItinerary 结构生成结果。
       2. 只返回结构化数据，不要输出任何额外解释。
+      3. 严格按照结构化数据中的Field 中description 要求进行生成
       3. 每天安排 2~3 个主要行程。
-      4. 每个行程使用简短描述，避免长篇介绍。
+      4. 每个行程说明开始时间，结束时间，使用简短描述，避免长篇介绍 
    """
 
     struct_llm = llm.with_structured_output(

@@ -1,6 +1,8 @@
 from typing import TypedDict,Annotated
 from langgraph.graph.message import add_messages
 from agent.models.travel_request import TravelRequest
+from agent.models.travel_request_patch import TravelRequestPatch
+
 from agent.models.travel_collection_info import TravelCollectionInfo
 from agent.models.travel_plan_check_result import TravelPlanCheckResult
 from agent.models.travel_human_approval import TravelHumanApproval
@@ -26,6 +28,8 @@ class TravelState(TypedDict):
     # hotels:list
     # transportation:list
     # rotues:list
+    travel_request_patch: TravelRequestPatch | None
+
     travel_collection_info:TravelCollectionInfo
 
     itinerary: list  # 规划结果
@@ -35,3 +39,6 @@ class TravelState(TypedDict):
     check_plan_result: TravelPlanCheckResult
 
     user_approved:TravelHumanApproval
+
+    is_request_changed:bool # 用户是否修改了当前的 TravelRequest
+    

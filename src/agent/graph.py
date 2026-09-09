@@ -9,6 +9,8 @@ from agent.nodes.optimize_itinerary_node import optimize_itinerary_node
 from agent.nodes.plan_check_node import plan_check_node
 
 from agent.nodes.human_approval_node import human_approval_node
+from agent.nodes.analyze_human_feedback_node import analyze_human_feedback_node
+from agent.nodes.update_travel_request_node import update_travel_request_node
 
 # plan_check检测轮数
 check_plan_total_numbers = 1
@@ -58,6 +60,14 @@ def human_approval(state:TravelState):
      result = human_approval_node(state)
      return result
 
+def analyze_human_feedback(state:TravelState):
+    analyze =  analyze_human_feedback_node(state)
+    return analyze
+   
+
+def update_travel_request(state:TravelState):
+    result = update_travel_request_node(state)
+    return result
 
 def finalize(state:TravelState):
     itinerary = state["itinerary"]
@@ -76,7 +86,8 @@ def is_approval_continue(state:TravelState):
     if isApproval:
          return "finalize"
     else:
-         return "optimize_itinerary"
+        # return "optimize_itinerary"
+        return  "analyze_human_feedback"
 
 def is_check_plan_continue(state:TravelState):
     check_plan_result = state.get("check_plan_result")
@@ -89,6 +100,15 @@ def is_check_plan_continue(state:TravelState):
         return "human_approval"
     else:
         return "optimize_itinerary"
+
+def is_update_travel_request_continue(state:TravelState):
+       is_request_changed = state["is_request_changed"]
+       print("=======Analyze Human Feedback 分析用户反馈是否发生改变========")
+       print(is_request_changed)
+       if is_request_changed == True:
+           return "update_travel_request"
+       else:
+           return "optimize_itinerary"    
 
 builder = StateGraph(TravelState)
 
@@ -117,6 +137,15 @@ builder.add_node(
 )
 
 builder.add_node(
+    "analyze_human_feedback" , analyze_human_feedback
+)
+
+builder.add_node(
+    "update_travel_request" , update_travel_request
+)
+
+
+builder.add_node(
     "finalize" , finalize
 )
 
@@ -134,8 +163,21 @@ builder.add_conditional_edges(
 builder.add_conditional_edges(
     "human_approval",
     is_approval_continue,
-    {"finalize": "finalize", "optimize_itinerary": "optimize_itinerary"},
+    {"finalize": "finalize", "analyze_human_feedback": "analyze_human_feedback"},
 )
+
+builder.add_conditional_edges(
+    "analyze_human_feedback",
+    is_update_travel_request_continue,
+    {"update_travel_request": "update_travel_request", "optimize_itinerary": "optimize_itinerary"},
+
+)
+
+builder.add_edge(
+    "update_travel_request", "plan_itinerary"
+)
+
+
 builder.add_edge("finalize",END)
 
 graph = builder.compile(checkpointer=memory_saver)

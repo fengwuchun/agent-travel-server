@@ -36,7 +36,7 @@ def parse_request_node(state:TravelState) -> TravelState:
     的字段要求处理。
     【特殊情况处理】
     1.如何用户没有日期，开始日期则从当天的后一天开始算，结束日期为开始日期加上旅行天数
-    2.旅行人数如果没有说明具体人数默认为1人
+   
     """
     #保存整个对话
     new_mesages = list(messages)
