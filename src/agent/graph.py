@@ -108,7 +108,8 @@ def is_update_travel_request_continue(state:TravelState):
        if is_request_changed == True:
            return "update_travel_request"
        else:
-           return "optimize_itinerary"    
+           #return "optimize_itinerary"  
+           return "plan_itinerary"  
 
 builder = StateGraph(TravelState)
 
@@ -153,23 +154,39 @@ builder.add_node(
 builder.add_edge(START,"parse_request")
 builder.add_edge("parse_request","travel_collection_info")
 builder.add_edge("travel_collection_info","plan_itinerary")
-builder.add_edge("plan_itinerary","optimize_itinerary")
-builder.add_edge("optimize_itinerary","check_plan")
-builder.add_conditional_edges(
-    "check_plan",
-    is_check_plan_continue,
-    {"human_approval": "human_approval", "optimize_itinerary": "optimize_itinerary"},
-)
+#临时不需要优化直接 plan_itinerary -> check_plan
+# builder.add_edge("plan_itinerary","optimize_itinerary")
+# builder.add_edge("optimize_itinerary","check_plan")
+builder.add_edge("plan_itinerary","check_plan")
+
+#临时不需要优化直接 plan_itinerary -> check_plan
+# builder.add_conditional_edges(
+#     "check_plan",
+#     is_check_plan_continue,
+#     {"human_approval": "human_approval", "optimize_itinerary": "optimize_itinerary"},
+# )
+
+builder.add_edge("check_plan","human_approval")
+
 builder.add_conditional_edges(
     "human_approval",
     is_approval_continue,
     {"finalize": "finalize", "analyze_human_feedback": "analyze_human_feedback"},
 )
 
+#临时不需要优化直接 plan_itinerary -> check_plan
+# builder.add_conditional_edges(
+#     "analyze_human_feedback",
+#     is_update_travel_request_continue,
+#     {"update_travel_request": "update_travel_request", "optimize_itinerary": "optimize_itinerary"},
+
+# )
+
+
 builder.add_conditional_edges(
     "analyze_human_feedback",
     is_update_travel_request_continue,
-    {"update_travel_request": "update_travel_request", "optimize_itinerary": "optimize_itinerary"},
+    {"update_travel_request": "update_travel_request", "plan_itinerary": "plan_itinerary"},
 
 )
 
