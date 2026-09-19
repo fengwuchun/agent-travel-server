@@ -6,6 +6,7 @@ from agent.models.travel_request_patch import TravelRequestPatch
 from agent.models.travel_collection_info import TravelCollectionInfo
 from agent.models.travel_plan_check_result import TravelPlanCheckResult
 from agent.models.travel_human_approval import TravelHumanApproval
+from agent.models.travel_restaurant_info import TravelRestaurantInfo
 
 class TravelState(TypedDict):
     messages: Annotated[list,add_messages]
@@ -37,7 +38,7 @@ class TravelState(TypedDict):
     auto_optimization_count: int  # 自动优化次数
     user_revision_count: int  # 用户拒绝方案后重新要求优化了多少次
     check_plan_result: TravelPlanCheckResult
-
+    restaurant_info: TravelRestaurantInfo #推荐餐厅美食
     user_approved:TravelHumanApproval
 
     is_request_changed:bool # 用户是否修改了当前的 TravelRequest

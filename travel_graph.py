@@ -13,7 +13,7 @@ result = graph.invoke({
       "messages" :[
           {
               "role" : "user",
-              "content" : "我想去成都旅游，请帮我制定一个行程"
+              "content" : ""
           }
       ]
     },

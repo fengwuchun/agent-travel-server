@@ -15,3 +15,7 @@ class DailyActivity(BaseModel):
 
     description: str = Field(description=
                              '''结合用户偏好说明该活动的特点，控制在20字以内''')
+
+    restaurant : str | None = Field(
+        default=None, description="该活动所related的餐厅或者美食"
+    )

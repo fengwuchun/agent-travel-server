@@ -11,6 +11,8 @@ from agent.nodes.plan_check_node import plan_check_node
 from agent.nodes.human_approval_node import human_approval_node
 from agent.nodes.analyze_human_feedback_node import analyze_human_feedback_node
 from agent.nodes.update_travel_request_node import update_travel_request_node
+from agent.nodes.restaurant_info_node import restaurant_info_node
+from agent.nodes.finalize_node import finalize_node
 
 # plan_check检测轮数
 check_plan_total_numbers = 1
@@ -46,6 +48,13 @@ def optimize_itinerary(state:TravelState):
     JsonUtil.print_json(result["itinerary"])
     return result
 
+def restaurant_info(state:TravelState):
+     result = restaurant_info_node(state)
+     print("=====Restaurant Info 餐厅信息========")
+     print(result)
+    
+     return result
+
 
 def check_plan(state:TravelState):
      result = plan_check_node(state)
@@ -70,10 +79,17 @@ def update_travel_request(state:TravelState):
     return result
 
 def finalize(state:TravelState):
-    itinerary = state["itinerary"]
-    print("=====最终行程========")
-    JsonUtil.print_json(itinerary)
-    return {"finalize" : itinerary}
+    #itinerary = state["itinerary"]
+    # print("=====最终行程========")
+    # print(itinerary)
+    # JsonUtil.print_json(itinerary)
+    # restaurant_info = state["restaurant_info"]
+    # print("=====餐厅信息========")
+    # print(restaurant_info)
+    # return {"finalize" : itinerary,"restaurant_info":restaurant_info}
+    return finalize_node(state)
+
+
 
 
 def is_approval_continue(state:TravelState):
@@ -86,20 +102,8 @@ def is_approval_continue(state:TravelState):
     if isApproval:
          return "finalize"
     else:
-        # return "optimize_itinerary"
         return  "analyze_human_feedback"
 
-def is_check_plan_continue(state:TravelState):
-    check_plan_result = state.get("check_plan_result")
-    auto_optimization_count = state.get("auto_optimization_count",0)
-    print(check_plan_result.is_valid)
-    if check_plan_result.is_valid:
-        return "human_approval"
-
-    if auto_optimization_count >= check_plan_total_numbers:
-        return "human_approval"
-    else:
-        return "optimize_itinerary"
 
 def is_update_travel_request_continue(state:TravelState):
        is_request_changed = state["is_request_changed"]
@@ -108,7 +112,6 @@ def is_update_travel_request_continue(state:TravelState):
        if is_request_changed == True:
            return "update_travel_request"
        else:
-           #return "optimize_itinerary"  
            return "plan_itinerary"  
 
 builder = StateGraph(TravelState)
@@ -123,6 +126,10 @@ builder.add_node(
 
 builder.add_node(
     "plan_itinerary" , plan_itinerary
+)
+builder.add_node(
+    "restaurant_info" , restaurant_info
+
 )
 
 builder.add_node(
@@ -154,33 +161,20 @@ builder.add_node(
 builder.add_edge(START,"parse_request")
 builder.add_edge("parse_request","travel_collection_info")
 builder.add_edge("travel_collection_info","plan_itinerary")
-#临时不需要优化直接 plan_itinerary -> check_plan
-# builder.add_edge("plan_itinerary","optimize_itinerary")
-# builder.add_edge("optimize_itinerary","check_plan")
+#增加美食
+builder.add_edge("plan_itinerary","restaurant_info")
+
+
 builder.add_edge("plan_itinerary","check_plan")
 
-#临时不需要优化直接 plan_itinerary -> check_plan
-# builder.add_conditional_edges(
-#     "check_plan",
-#     is_check_plan_continue,
-#     {"human_approval": "human_approval", "optimize_itinerary": "optimize_itinerary"},
-# )
-
 builder.add_edge("check_plan","human_approval")
+builder.add_edge("restaurant_info","human_approval")
 
 builder.add_conditional_edges(
     "human_approval",
     is_approval_continue,
     {"finalize": "finalize", "analyze_human_feedback": "analyze_human_feedback"},
 )
-
-#临时不需要优化直接 plan_itinerary -> check_plan
-# builder.add_conditional_edges(
-#     "analyze_human_feedback",
-#     is_update_travel_request_continue,
-#     {"update_travel_request": "update_travel_request", "optimize_itinerary": "optimize_itinerary"},
-
-# )
 
 
 builder.add_conditional_edges(
