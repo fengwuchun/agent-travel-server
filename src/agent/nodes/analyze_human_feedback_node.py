@@ -28,7 +28,14 @@ def analyze_human_feedback_node(state: TravelState):
             预算：{request.budget}
             偏好：{request.preferences}
             服务需求：{request.service_requirements}
-            - service_requirements：用户需要的旅游服务，例如 hotel、restaurant、weather、transportation
+
+          【service_requirements】
+           - service_requirements：用户需要的旅游服务，例如 hotel、restaurant、weather、transportation
+           - 如果用户明确提出酒店、住宿、入住酒店、推荐酒店、帮我找酒店、酒店推荐等需求，必须返回 ["hotel"]
+           - 如果用户明确提出餐厅、美食、吃饭、推荐餐厅等需求，返回 ["restaurant"]
+           - 如果同时提出酒店和餐厅，返回 ["hotel", "restaurant"]
+           - 如果没有提出住宿或餐饮需求，返回 null
+    
             【规则】
 
             1. 只有用户明确修改的内容才进行映射。
