@@ -19,3 +19,5 @@ class DailyActivity(BaseModel):
     restaurant : str | None = Field(
         default=None, description="该活动所related的餐厅或者美食"
     )
+
+   

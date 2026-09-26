@@ -9,4 +9,5 @@ class TravelRequest:
         duration: int
         travelers: int
         budget: float
-        preferences: list[str] 
+        preferences: list[str]
+        service_requirements: list[str] 

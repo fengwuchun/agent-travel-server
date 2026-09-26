@@ -28,6 +28,7 @@ def parse_request_node(state:TravelState) -> TravelState:
     - travelers：旅行人数
     - budget：预算
     - preferences：旅行偏好
+    - service_requirements：用户需要的旅游服务，例如 hotel、restaurant、weather、transportation
 
     请严格根据用户实际提供的信息进行提取，
     不要使用示例数据，不要根据示例进行猜测。
@@ -36,7 +37,12 @@ def parse_request_node(state:TravelState) -> TravelState:
     的字段要求处理。
     【特殊情况处理】
     1.如何用户没有日期，开始日期则从当天的后一天开始算，结束日期为开始日期加上旅行天数
-   
+    2.service_requirements 字段如何填写，例如：
+       1.hotel：酒店
+       2.restaurant：餐厅
+       3.weather：天气
+       4.transportation：交通
+       5.other：其他
     """
     #保存整个对话
     new_mesages = list(messages)

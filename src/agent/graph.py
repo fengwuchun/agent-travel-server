@@ -12,7 +12,9 @@ from agent.nodes.human_approval_node import human_approval_node
 from agent.nodes.analyze_human_feedback_node import analyze_human_feedback_node
 from agent.nodes.update_travel_request_node import update_travel_request_node
 from agent.nodes.restaurant_info_node import restaurant_info_node
+from agent.nodes.hotel_info_node import hotel_info_node
 from agent.nodes.finalize_node import finalize_node
+from agent.nodes.is_recomand_hotels_node import is_recomand_hotels_node
 
 # plan_check检测轮数
 check_plan_total_numbers = 1
@@ -55,6 +57,12 @@ def restaurant_info(state:TravelState):
     
      return result
 
+def hotel_info(state:TravelState):
+     result = hotel_info_node(state)
+     print("=====Hostel Info 宿宿信息========")
+     print(result)
+     return result
+
 
 def check_plan(state:TravelState):
      result = plan_check_node(state)
@@ -79,18 +87,18 @@ def update_travel_request(state:TravelState):
     return result
 
 def finalize(state:TravelState):
-    #itinerary = state["itinerary"]
-    # print("=====最终行程========")
-    # print(itinerary)
-    # JsonUtil.print_json(itinerary)
-    # restaurant_info = state["restaurant_info"]
-    # print("=====餐厅信息========")
-    # print(restaurant_info)
-    # return {"finalize" : itinerary,"restaurant_info":restaurant_info}
     return finalize_node(state)
 
 
-
+def is_recommand_hostels(state:TravelState):
+       return is_recomand_hotels_node(state)
+def is_recommand_hostels_continue(state:TravelState):
+        is_recommand =  state["is_recommand_hostels"]
+        if is_recommand :
+            return "hotel_info"
+        else:
+            return "human_approval" 
+             
 
 def is_approval_continue(state:TravelState):
     user_approval = state["user_approved"]
@@ -107,9 +115,14 @@ def is_approval_continue(state:TravelState):
 
 def is_update_travel_request_continue(state:TravelState):
        is_request_changed = state["is_request_changed"]
+       is_recommand_hostels = state["is_recommand_hostels"]
        print("=======Analyze Human Feedback 分析用户反馈是否发生改变========")
        print(is_request_changed)
+       print("=====是否推荐酒店发生改变=========")
+       print(is_recommand_hostels)
        if is_request_changed == True:
+           if is_recommand_hostels == True:
+                return "is_recommand_hostels" 
            return "update_travel_request"
        else:
            return "plan_itinerary"  
@@ -141,6 +154,14 @@ builder.add_node(
 )
 
 builder.add_node(
+    "is_recommand_hostels" , is_recommand_hostels  
+)
+
+builder.add_node(
+     "hotel_info", hotel_info
+)
+
+builder.add_node(
     "human_approval" , human_approval
 )
 
@@ -166,9 +187,17 @@ builder.add_edge("plan_itinerary","restaurant_info")
 
 
 builder.add_edge("plan_itinerary","check_plan")
+builder.add_edge("plan_itinerary","is_recommand_hostels")
 
 builder.add_edge("check_plan","human_approval")
 builder.add_edge("restaurant_info","human_approval")
+builder.add_conditional_edges(
+    "is_recommand_hostels", 
+    is_recommand_hostels_continue,
+    {"hotel_info": "hotel_info", "human_approval": "human_approval"},
+)
+
+builder.add_edge("hotel_info","human_approval")
 
 builder.add_conditional_edges(
     "human_approval",
@@ -180,7 +209,7 @@ builder.add_conditional_edges(
 builder.add_conditional_edges(
     "analyze_human_feedback",
     is_update_travel_request_continue,
-    {"update_travel_request": "update_travel_request", "plan_itinerary": "plan_itinerary"},
+    {"is_recommand_hostels":"is_recommand_hostels","update_travel_request": "update_travel_request", "plan_itinerary": "plan_itinerary"},
 
 )
 

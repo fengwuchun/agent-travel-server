@@ -12,3 +12,4 @@ class TravelRequestPatch:
     travelers: int | None = None
     budget: float | None = None
     preferences: list[str] | None = None
+    service_requirements: list[str] | None = None

@@ -22,6 +22,7 @@ def plan_itinerary_node(state:TravelState) -> TravelState:
 预算：{request.budget}
 偏好：{request.preferences}
 
+
 【已收集的旅游信息】
 天气：{collection_info.weather}
 景点：{collection_info.attractions}

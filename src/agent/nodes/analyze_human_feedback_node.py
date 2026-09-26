@@ -27,7 +27,8 @@ def analyze_human_feedback_node(state: TravelState):
             人数：{request.travelers}
             预算：{request.budget}
             偏好：{request.preferences}
-
+            服务需求：{request.service_requirements}
+            - service_requirements：用户需要的旅游服务，例如 hotel、restaurant、weather、transportation
             【规则】
 
             1. 只有用户明确修改的内容才进行映射。
@@ -50,12 +51,23 @@ def analyze_human_feedback_node(state: TravelState):
       print(patch)
       JsonUtil.print_json(patch)
 
-      is_request_changed = just_requst_change(request,patch)
-      if is_request_changed == None:
+      request_changed = just_requst_change(request,patch)
+      is_request_changed:bool | None
+      is_service_requirements_change = False
+
+      if  isinstance(request_changed,dict):
+           is_request_changed = request_changed.get("change",None)
+           if (request_changed.get("key") == "service_requirements"
+               and  "hotel" in request_changed.get("value",[])):
+                is_service_requirements_change = True
+                
+      if request_changed == None:
            is_request_changed = False
+
       return {
            "is_request_changed" : is_request_changed,
-           "travel_request_patch" : patch
+           "travel_request_patch" : patch,
+           "is_recommand_hostels" : is_service_requirements_change
              }
     
     
@@ -77,9 +89,12 @@ def just_requst_change(request: TravelRequest, new_request: TravelRequestPatch):
         )
 
         if old_value != value:
-            return True
+             if key == "service_requirements" and "hotel" not in old_value :
+                  return {"key":"service_requirements","value":value,"change":True}  
+               
+             return {"key":"","value":"","change":True} 
 
-        return False
+        return {"key":"","value":"","change":False}
             
      
     

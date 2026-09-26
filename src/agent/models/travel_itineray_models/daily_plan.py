@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from agent.models.travel_itineray_models.daily_activity import DailyActivity
-
+from agent.models.travel_hotel_info import TravelHotelInfo
 
 
 # ============================================================
@@ -29,4 +29,9 @@ class DailyPlan(BaseModel):
     # 活动
     activities: list[DailyActivity] = Field(
         default_factory=list, description="当天安排的活动或景点"
+    )
+
+    #酒店
+    hotel: TravelHotelInfo | None = Field(
+         default=None, description="当天的酒店"
     )
