@@ -10,6 +10,8 @@ def update_travel_request_node(state: TravelState) -> TravelState:
      travel_request = state["travel_request"]
      request_data = travel_request.__dict__.copy()
      patch_data = travel_request_patch
+     print("======新的请求===========")
+     print(patch_data)
      for key, value in patch_data.items():
           if value is not None:
                request_data[key] = value

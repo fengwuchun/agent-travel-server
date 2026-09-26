@@ -60,14 +60,19 @@ def analyze_human_feedback_node(state: TravelState):
            if (request_changed.get("key") == "service_requirements"
                and  "hotel" in request_changed.get("value",[])):
                 is_service_requirements_change = True
-                
+                request.service_requirements = patch.get("service_requirements")
+                   
       if request_changed == None:
            is_request_changed = False
+
+      print("======新的request需求=======")
+      print(request)     
 
       return {
            "is_request_changed" : is_request_changed,
            "travel_request_patch" : patch,
-           "is_recommand_hostels" : is_service_requirements_change
+           "is_recommand_hostels" : is_service_requirements_change,
+           "travel_request" : request
              }
     
     
@@ -92,9 +97,9 @@ def just_requst_change(request: TravelRequest, new_request: TravelRequestPatch):
              if key == "service_requirements" and "hotel" not in old_value :
                   return {"key":"service_requirements","value":value,"change":True}  
                
-             return {"key":"","value":"","change":True} 
+             return {"key":key,"value":value,"change":True} 
 
-        return {"key":"","value":"","change":False}
+        return {"key":key,"value":old_value,"change":False}
             
      
     
