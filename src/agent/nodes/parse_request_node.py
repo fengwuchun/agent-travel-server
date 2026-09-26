@@ -106,26 +106,26 @@ def parse_request_node(state:TravelState) -> TravelState:
 def interrupt_use(result:TravelRequest):
     need_data = []
     if not result.destination:
-        need_data.append(1)
+        need_data.append(1) #目的地
 
     # if not result.departure:  
     #     need_data.append(2)  
 
-    if not result.travelers:   
-        need_data.append(3)
+    # if not result.travelers:   
+    #     need_data.append(3) #人数
 
     if not result.duration:  
-        need_data.append(4)
+        need_data.append(4) #天数
 
-    if not result.budget:  
-        need_data.append(5)  
+    # if not result.budget:  
+    #     need_data.append(5)  #预算
 
     # if not result.preferences:   
     #     need_data.append(6)   
 
     # 1,3,4,5 必须参数
 
-    required_fields = [1, 3, 4, 5]
+    required_fields = [1,  4]
 
     has_missing_required = any(
     i in need_data
