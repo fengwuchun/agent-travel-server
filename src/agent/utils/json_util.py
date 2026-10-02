@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from pydantic import BaseModel
 
 
 class JsonUtil:
@@ -22,3 +23,14 @@ class JsonUtil:
         """
 
         print(JsonUtil.dumps(data))
+
+def json_str(data):
+    return json.dumps(
+        data,
+        ensure_ascii=False,
+        default=lambda obj: (
+            obj.model_dump()
+            if isinstance(obj, BaseModel)
+            else str(obj)
+        )
+    )

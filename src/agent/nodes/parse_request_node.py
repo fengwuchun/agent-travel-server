@@ -10,6 +10,7 @@ from langgraph.types import interrupt
 from agent.utils.message_until import MessageUntil
 from langchain_core.messages import HumanMessage
 
+
 def parse_request_node(state:TravelState) -> TravelState:
     messages = state["messages"]
     print("=======收到用户的描述：=======")
@@ -43,6 +44,9 @@ def parse_request_node(state:TravelState) -> TravelState:
        3.weather：天气
        4.transportation：交通
        5.other：其他
+
+     
+               
     """
     #保存整个对话
     new_mesages = list(messages)
