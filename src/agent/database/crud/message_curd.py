@@ -64,5 +64,30 @@ page_size: int = 5,  #每页多少条
     }
 
 
+def get_all_message_by_thead_id(
+      thread_id: str,  
+       db: Session, 
+):
+      stmt = select(MessageModel).where(
+        MessageModel.thread_id == thread_id
+      )
 
-    
+      return db.execute(stmt).scalars().all()
+
+def delete_message_by_thead_id(
+        thread_id: str,
+        db: Session,
+) -> bool:
+
+    message_models = get_all_message_by_thead_id(thread_id, db)
+
+    if not message_models:
+        return False
+
+    for message_model in message_models:
+        db.delete(message_model)
+
+    db.commit()
+
+    return True
+      

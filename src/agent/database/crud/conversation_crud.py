@@ -32,3 +32,24 @@ def get_conversation_by_user_id(
     ).scalars().all()
     
     return conversations
+
+
+def delete_conversation_by_user_id(
+        thread_id: str,
+        db: Session,
+) -> bool:
+
+    conversation = db.execute(
+        select(Conversation)
+        .where(
+            Conversation.thread_id == thread_id
+        )
+    ).scalar_one_or_none()
+
+    if conversation is None:
+        return False
+
+    db.delete(conversation)
+    db.commit()
+
+    return True

@@ -18,6 +18,7 @@ def plan_itinerary_node(state:TravelState) -> TravelState:
 目的地：{request.destination}
 开始日期：{request.start_date}
 结束日期：{request.end_date}
+旅行天数：{request.duration}
 人数：{request.travelers}
 预算：{request.budget}
 偏好：{request.preferences}
@@ -37,6 +38,7 @@ def plan_itinerary_node(state:TravelState) -> TravelState:
       3. 严格按照结构化数据中的Field 中description 要求进行生成
       3. 每天安排 2~3 个主要行程。
       4. 每个行程说明开始时间，结束时间，使用简短描述，避免长篇介绍 
+      5. daily_plans 的数量必须等于 {request.duration},不能多一天，也不能少一天
    """
 
     struct_llm = llm.with_structured_output(
@@ -46,6 +48,8 @@ def plan_itinerary_node(state:TravelState) -> TravelState:
    #  print("========struct_llm========\n")
     print(struct_llm)
 
+    print("========== Prompt 长度 ==========")
+    print(len(prompt))
     result = struct_llm.invoke(prompt)
    #  print("========Plan Itinerary reusult========\n")
    #  print(result)

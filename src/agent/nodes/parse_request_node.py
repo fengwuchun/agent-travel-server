@@ -9,12 +9,20 @@ from datetime import datetime, timedelta
 from langgraph.types import interrupt
 from agent.utils.message_until import MessageUntil
 from langchain_core.messages import HumanMessage
+from agent.models.travel_request_update import TravelRequestUpdate
+from dataclasses import asdict, is_dataclass
 
 
 def parse_request_node(state:TravelState) -> TravelState:
     messages = state["messages"]
     print("=======收到用户的描述：=======")
     print(messages)
+
+    # 1. 获取当前 Checkpoint 中已经保存的旅行需求
+    current_request = state.get("travel_request")
+    print("======获取数据库中state======")
+    print(current_request)
+
 
     prompt = """
     你是一个旅游需求解析助手。
@@ -93,16 +101,6 @@ def parse_request_node(state:TravelState) -> TravelState:
 
     print("=====最后请求数据========")
     print(result)      
-
-    # request = TravelRequest(
-    #             departure= "深圳",
-    #             destination= "成都",
-    #             start_date= "2026-09-01",
-    #             end_date= "2026-09-05",
-    #             travelers= 2,
-    #             budget= 4000,
-    #             preferences=["自然风光","大熊猫"]
-    #   )
 
     return {"travel_request": result}
 

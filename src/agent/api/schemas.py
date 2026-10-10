@@ -1,8 +1,11 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import datetime
 
 class TravelCreateRequest(BaseModel):
     content:str
+    thread_id: Optional[str] = None
 
 class TravelAddRequest(BaseModel):
     content:str
@@ -44,7 +47,10 @@ class MessagePageResponse(BaseModel):
     page_size: int
     total: int
     total_pages: int
-    has_more: bool   
+    has_more: bool
+
+class SwitchConversationRequest(BaseModel):
+    thread_id: str     
 
 
     
